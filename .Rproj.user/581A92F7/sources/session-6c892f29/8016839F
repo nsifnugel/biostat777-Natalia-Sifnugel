@@ -3,7 +3,7 @@
     "path": "~/Desktop/biostat777-Natalia-Sifnugel/about.qmd",
     "project_path": "about.qmd",
     "type": "quarto_markdown",
-    "hash": "1463131390",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1699468131432.0,
@@ -17,8 +17,8 @@
         "docOutlineVisible": "1",
         "rmdVisualCollapsedChunks": "",
         "rmdVisualModeLocation": "41:0",
-        "cursorPosition": "4,0",
-        "scrollLine": "0"
+        "cursorPosition": "1,14",
+        "scrollLine": "7"
     },
     "folds": "",
     "lastKnownWriteTime": 1699468178,
