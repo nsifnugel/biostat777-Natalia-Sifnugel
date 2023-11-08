@@ -1,5 +1,6 @@
 # biostat777-intro-Natalia-Sifnugel
 
-This repository contains my personal website, the first project for biostat777.
+This repository contains all files for my personal website, the first project for biostat777.
 
-pulling and pushing from github
+You can reach my website at: <https://nsifnugel.github.io/biostat777-intro-Natalia-Sifnugel/>
+
