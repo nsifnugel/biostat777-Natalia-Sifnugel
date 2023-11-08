@@ -147,7 +147,9 @@ patient_data_wrangled %>%
   mutate(percent_in_age_cat = case_when(
     sex == "FEMALE" ~ n/34,
     sex == "MALE" ~ n/57),
-    age_cat = str_remove_all(age_cat,"age group: ")) %>%
+    age_cat = str_remove_all(age_cat,"age group: "),
+    age_cat = factor(age_cat),
+    age_cat = fct_rev(age_cat)) %>%
   ggplot() +
   geom_bar(aes(x = sex, y = percent_in_age_cat, fill = age_cat),
            stat = "identity",
