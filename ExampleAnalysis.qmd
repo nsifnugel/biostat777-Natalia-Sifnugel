@@ -19,10 +19,9 @@ The intended audience for this analysis is any health professional interested in
 
 [Click here for the data dictionary.](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-10-24/readme.md#data-dictionary)
 
-
 ## Set Up
 
-The code chunk below contains the libraries I used, how I read in the data set, and the preliminary data cleaning required for the sex stratified analysis. 
+The code chunk below contains the libraries I used, how I read in the data set, and the preliminary data cleaning required for the sex stratified analysis.
 
 ```{r, output = FALSE}
 library(tidyverse)
@@ -173,8 +172,10 @@ patient_data_wrangled %>%
 
 ## Summary of Results
 
+hello
+
 ## Functions
 
-- **tidyr**:
-- **dplyr**:
-- **ggplot**:
+-   **tidyr**:
+-   **dplyr**:
+-   **ggplot**:
