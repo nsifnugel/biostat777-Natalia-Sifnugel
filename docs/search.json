@@ -4,13 +4,90 @@
     "href": "index.html",
     "title": "biostat777-Natalia-Sifnugel",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Welcome!\nMy name is Natalia and I am an MPH student at Johns Hopkins Bloomberg School of Public Health. I am from Boston, Massachusetts and have also lived in New Orleans and Madrid. For fun, I love to knit, watch the real housewives (any franchise), and travel. Below is a photo of me in Chefchaouen, Morocco."
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "I grew in Boston, Massachusetts and moved to New Orleans, LA in 2016 to attend Tulane University. There, I received a Bachelor of Science in Neuroscience. I also minored in chemistry and public health.\nDuring college, I worked as an RA in the Fadok Laboratory at the Tulane Brain Institute, studying the biological mechanisms of psychiatric disorders. After graduating, I took on a new RA position in the Sharpe Laboratory at Harvard Medical School where I investigated ways to leverage immune responses to fight cancer."
+  },
+  {
+    "objectID": "about.html#background",
+    "href": "about.html#background",
+    "title": "About",
+    "section": "",
+    "text": "I grew in Boston, Massachusetts and moved to New Orleans, LA in 2016 to attend Tulane University. There, I received a Bachelor of Science in Neuroscience. I also minored in chemistry and public health.\nDuring college, I worked as an RA in the Fadok Laboratory at the Tulane Brain Institute, studying the biological mechanisms of psychiatric disorders. After graduating, I took on a new RA position in the Sharpe Laboratory at Harvard Medical School where I investigated ways to leverage immune responses to fight cancer."
+  },
+  {
+    "objectID": "about.html#professional-goals",
+    "href": "about.html#professional-goals",
+    "title": "About",
+    "section": "Professional Goals",
+    "text": "Professional Goals\nI am deeply passionate about the social determinants of health and closing gaps in health equity. After gaining my MPH, I am interested in using my data analysis skills in a consulting, nonprofit, or policy setting to advance the health of vulnerable populations in the US."
+  },
+  {
+    "objectID": "about.html#personal-facts",
+    "href": "about.html#personal-facts",
+    "title": "About",
+    "section": "Personal Facts",
+    "text": "Personal Facts\n\nI have two older sisters.\nI went to the oldest public high school in the US.\nI love dachshunds and hope to someday rescue one!"
+  },
+  {
+    "objectID": "ExampleAnalysis.html",
+    "href": "ExampleAnalysis.html",
+    "title": "Example Analysis",
+    "section": "",
+    "text": "As an example analysis, I used a data set published on the Tidy Tuesday GitHub repository. These data contain risk prediction scores for 14 different health outcomes for 100 simulated patients. The prediction scores are based on exposure to certain risk factors also included in the data set. The exposure(s) and outcome relationships were generated using logistic regression modeling of real world data.\n\n\n\n\n\n\n\n\n\nWith the patient risk prediction score data, the question I sought to answer was: are there sex differences in predicted risk and in risk factors? I also looked into the age distributions of each group as it could explain in part some of the observed differences.\nThe intended audience for this analysis is any health professional interested in observing the coherence of risk prediction models with existing literature and knowledge.\nClick here for the data dictionary."
+  },
+  {
+    "objectID": "ExampleAnalysis.html#overview",
+    "href": "ExampleAnalysis.html#overview",
+    "title": "Example Analysis",
+    "section": "",
+    "text": "As an example analysis, I used a data set published on the Tidy Tuesday GitHub repository. These data contain risk prediction scores for 14 different health outcomes for 100 simulated patients. The prediction scores are based on exposure to certain risk factors also included in the data set. The exposure(s) and outcome relationships were generated using logistic regression modeling of real world data.\n\n\n\n\n\n\n\n\n\nWith the patient risk prediction score data, the question I sought to answer was: are there sex differences in predicted risk and in risk factors? I also looked into the age distributions of each group as it could explain in part some of the observed differences.\nThe intended audience for this analysis is any health professional interested in observing the coherence of risk prediction models with existing literature and knowledge.\nClick here for the data dictionary."
+  },
+  {
+    "objectID": "ExampleAnalysis.html#set-up",
+    "href": "ExampleAnalysis.html#set-up",
+    "title": "Example Analysis",
+    "section": "Set Up",
+    "text": "Set Up\nThe code chunk below contains the libraries I used, how I read in the data set, and the preliminary data cleaning required for the sex stratified analysis.\n\n\nCode\nlibrary(tidyverse)\nlibrary(tidytuesdayR)\n\npatient_risk_profiles &lt;- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-10-24/patient_risk_profiles.csv')\n\npatient_data_wrangled &lt;- patient_risk_profiles %&gt;%\n  pivot_longer(starts_with(\"age\"), names_to = \"age_cat\", values_to = \"Age_Y_N\") %&gt;%\n  mutate(age_cat = factor(age_cat)) %&gt;%\n  filter(Age_Y_N == 1) %&gt;%\n  pivot_longer(c(\"Sex = FEMALE\", \"Sex = MALE\"), names_to = \"sex\", values_to = \"sex_Y_N\") %&gt;%\n  filter(sex_Y_N == 1) %&gt;% #some patients have duplicated sex data\n  filter(!row_number() %in% c(which(duplicated(personId)), which(duplicated(personId)) - c(1,1,1,1,1,1,1,1,1))) %&gt;% #removing patients marked as both male and female\n  mutate(sex = case_when(\n    sex == \"Sex = FEMALE\" ~ \"FEMALE\",\n    sex == \"Sex = MALE\" ~ \"MALE\"))"
+  },
+  {
+    "objectID": "ExampleAnalysis.html#risk-prediction-score-by-sex",
+    "href": "ExampleAnalysis.html#risk-prediction-score-by-sex",
+    "title": "Example Analysis",
+    "section": "Risk Prediction Score by Sex",
+    "text": "Risk Prediction Score by Sex\n\n\nCode\npatient_data_wrangled %&gt;%\n  select(age_cat,sex,starts_with(\"predicted\")) %&gt;%\n  group_by(sex) %&gt;%\n  summarise_if(is.numeric, mean, na.rm = TRUE) %&gt;%\n  pivot_longer(-c(sex), names_to = \"outcome\", values_to = \"predicted_risk\") %&gt;%\n # mutate(outcome = factor(outcome)) %&gt;% \n  mutate(outcome = factor(outcome),\n         outcome = str_remove_all(outcome,\"predicted risk of \"), \n         outcome = fct_recode(outcome,\n            \"Sudden Hearing Loss*\" = \"Sudden Hearing Loss, No congenital anomaly or middle or inner ear conditions\",\n            \"Sudden Vision Loss*\" = \"Sudden Vision Loss, with no eye pathology causes\",\n            \"Acute Pancreatitis*\" = \"Acute pancreatitis, with No chronic or hereditary or common causes of pancreatitis\",\n            \"TRD*\" = \" Treatment resistant depression (TRD)\",\n            \"Parkinson's Disease*\" = \"Parkinson's disease, inpatient or with 2nd diagnosis\"),\n         outcome = toupper(outcome)) %&gt;%\n  ggplot() +\n  geom_col(aes(sex, predicted_risk, fill = sex)) +\n  facet_wrap(\"outcome\", ncol = 4, scales = \"free\") +\n  labs(title = \"Risk Prediction Score for Health Outcomes by Sex\",\n       subtitle = \"Apparent sex differences in Treatment Resistant Depression, Migraine, Dementia, Ulcerative Colitis, Parkinson's and more.\",\n       caption = \"Source: Jenna Raps\",\n       x = \"Sex\",\n       y = \"Mean Predicted Risk Score\") +\n  theme(legend.position = \"none\",\n        axis.title.x = element_text(size = 14),\n        axis.title.y = element_text(size = 14),\n        plot.title = element_text(size = 22),\n        plot.subtitle = element_text(size = 14),\n        plot.caption = element_text(size = 10))\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdditional Information on Outcomes\n\nIt is important to note that risk prediction scores are generally low and that each outcome bar plot has a unique axis scale\nSudden Hearing Loss* refers to Sudden Hearing Loss, No congenital anomaly or middle or inner ear conditions\nSudden Vision Loss* refers to Sudden Vision Loss, with no eye pathology causes\nAcute Pancreatitis* refers to Acute pancreatitis, with No chronic or hereditary or common causes of pancreatitis\nTRD* refers to Treatment resistant depression (TRD)\nParkinson’s Disease* refers to Parkinson’s disease, inpatient or with 2nd diagnosis"
+  },
+  {
+    "objectID": "ExampleAnalysis.html#risk-factors-by-sex",
+    "href": "ExampleAnalysis.html#risk-factors-by-sex",
+    "title": "Example Analysis",
+    "section": "Risk Factors by Sex",
+    "text": "Risk Factors by Sex\n\n\nCode\npatient_data_wrangled %&gt;%\n  select(-c(starts_with(\"predicted\"),Age_Y_N,sex_Y_N,personId)) %&gt;%\n  group_by(sex) %&gt;%\n  summarise_if(is.numeric, mean, na.rm = TRUE) %&gt;%\n  pivot_longer(-sex, names_to = \"risk_factor\", values_to = \"mean\") %&gt;%\n  pivot_wider(names_from = \"sex\", values_from = \"mean\") %&gt;%\n  mutate(difference_mean = FEMALE - MALE) %&gt;%\n  filter(difference_mean &gt; 0.1 | difference_mean &lt; -0.1) %&gt;%\n  pivot_longer(c(FEMALE, MALE), names_to = \"sex\", values_to = \"mean\") %&gt;%\n  mutate(risk_factor = str_remove_all(risk_factor,\"in prior year\"),\n         risk_factor = str_replace(risk_factor,\"Antibiotics Glycopeptides and lipoglycopeptides\",\"Antibiotics G & L*\"),\n         risk_factor = str_replace(risk_factor,\"Major depressive disorder, with NO occurrence of certain psychiatric disorder\", \"Major Depressive Disorder*\"),\n         risk_factor = str_replace(risk_factor,\"Type 2.{55}\", \"Type II Diabetes*\"),\n         risk_factor = toupper(risk_factor),\n         risk_factor = factor(risk_factor),\n         risk_factor = fct_reorder(risk_factor, difference_mean),\n         risk_factor = fct_rev(risk_factor)) %&gt;%\n  ggplot(aes(x = risk_factor, y = mean)) +\n  geom_line(color = \"gray\") +\n  geom_point(aes(color =sex)) +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +\n  labs(title = \"Prevalence of Risk Factors by Sex\",\n       subtitle = \"Males in the sample have more Hepatitis and Atrial Fibrillation, while females have more Osteoperosis and Type II\\nDiabetes.\",\n       caption = \"Source: Jenna Raps\",\n       x = \"Risk Factor\",\n       y = \"Prevalence\") +\n  theme(axis.title.x = element_text(size = 10),\n        axis.title.y = element_text(size = 10),\n        plot.title = element_text(size = 14),\n        plot.subtitle = element_text(size = 10),\n        plot.caption = element_text(size = 8),\n        axis.text.y = element_text(size = 8),\n        legend.position = \"bottom\") +\n  scale_color_ordinal(name = \"Sex\") \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAdditional Information on Risk Factors\n\nIn total, there were 64 risk factors recorded in the initial data set, only factors in which the difference in prevalence between sexes was 0.1 or more are displayed\nOccurrence of all risk factors is within the prior year\nAntibiotics G & L* refers to Antibiotics Glycopeptides and lipoglycopeptides\nMajor Depressive Disorder* refers to Major depressive disorder, with NO occurrence of certain psychiatric disorder\nType II Diabetes* refers to Type 2 Diabetes Mellitus (DM), with no type 1 or secondary DM"
+  },
+  {
+    "objectID": "ExampleAnalysis.html#percent-of-patients-in-each-age-category-by-sex",
+    "href": "ExampleAnalysis.html#percent-of-patients-in-each-age-category-by-sex",
+    "title": "Example Analysis",
+    "section": "Percent of Patients in Each Age Category by Sex",
+    "text": "Percent of Patients in Each Age Category by Sex\n\n\nCode\npatient_data_wrangled %&gt;%\n  select(personId,sex,age_cat) %&gt;%\n  group_by(sex, age_cat) %&gt;%\n  summarise(n = length(personId)) %&gt;%\n  mutate(percent_in_age_cat = case_when(\n    sex == \"FEMALE\" ~ n/34,\n    sex == \"MALE\" ~ n/57),\n    age_cat = str_remove_all(age_cat,\"age group: \")) %&gt;%\n  ggplot() +\n  geom_bar(aes(x = sex, y = percent_in_age_cat, fill = age_cat),\n           stat = \"identity\",\n           position = \"stack\") +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +\n  labs(title = \"Percent of Patients in Age Category by Sex\",\n       subtitle = \"The female sample contains more patients in the younger age categories compared to the male sample.\",\n       caption = \"Source: Jenna Raps\",\n       x = \"Sex\",\n       y = \"Percent\") +\n  theme(axis.title.x = element_text(size = 10),\n        axis.title.y = element_text(size = 10),\n        plot.title = element_text(size = 16),\n        plot.subtitle = element_text(size = 10),\n        plot.caption = element_text(size = 8),\n        legend.position = \"bottom\") + \n  scale_fill_ordinal(name = \"Age Category\") +\n  coord_flip() + \n  scale_y_continuous(labels = scales::percent)"
+  },
+  {
+    "objectID": "ExampleAnalysis.html#summary-of-results",
+    "href": "ExampleAnalysis.html#summary-of-results",
+    "title": "Example Analysis",
+    "section": "Summary of Results",
+    "text": "Summary of Results"
+  },
+  {
+    "objectID": "ExampleAnalysis.html#functions",
+    "href": "ExampleAnalysis.html#functions",
+    "title": "Example Analysis",
+    "section": "Functions",
+    "text": "Functions\n\ntidyr:\ndplyr:\nggplot:"
   }
 ]
