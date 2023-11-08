@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Natalia Sifnugel"
+  title: "biostat777-intro-Natalia-Sifnugel"
   navbar:
     left:
       - href: index.qmd
