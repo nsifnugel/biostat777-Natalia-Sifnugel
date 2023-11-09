@@ -17,8 +17,15 @@ With the patient risk prediction score data, the question I sought to answer was
 
 The intended audience for this analysis is any health professional interested in observing the coherence of risk prediction models with existing literature and knowledge.
 
-[Click here for the data dictionary.](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-10-24/readme.md#data-dictionary)
+[Click here for the original data source.](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-10-24/patient_risk_profiles.csv)
 
+[Click here for the data dictionary.](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-10-24#data-dictionary)
+
+:::callout-important
+
+Nothing about causation should be inferred from these data!
+
+:::
 ## Set Up
 
 The code chunk below contains the libraries I used, how I read in the data set, and the preliminary data cleaning required for the sex stratified analysis.
@@ -76,7 +83,6 @@ patient_data_wrangled %>%
         plot.caption = element_text(size = 10))
 ```
 
-::: callout
 **Additional Information on Outcomes**
 
 -   It is important to note that risk prediction scores are generally low and that each outcome bar plot has a unique axis scale
@@ -85,8 +91,34 @@ patient_data_wrangled %>%
 -   Acute Pancreatitis\* refers to Acute pancreatitis, with No chronic or hereditary or common causes of pancreatitis
 -   TRD\* refers to Treatment resistant depression (TRD)
 -   Parkinson's Disease\* refers to Parkinson's disease, inpatient or with 2nd diagnosis
-:::
 
+```{r}
+#| column: margin
+
+patient_data_wrangled %>%
+  select(personId,starts_with("predicted")) %>% 
+  pivot_longer(-personId, names_to = "outcome", values_to = "predicted_risk") %>% 
+  group_by(outcome) %>% 
+  summarize(mean_predicted_score = mean(predicted_risk)) %>% 
+  arrange(desc(mean_predicted_score)) %>% 
+  slice(1:5) %>%
+  mutate(outcome = str_remove_all(outcome, "predicted risk of "),
+         outcome = str_remove(outcome, ", No congenital anomaly or middle or inner ear conditions"), 
+         outcome = toupper(outcome)) %>% 
+  ggplot(aes(x= outcome, y = mean_predicted_score)) +
+  geom_col(aes(colour = "lightblue", fill = "lightblue")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none") +
+  labs(title = "Top Five Predicted Outcomes",
+       y = "Mean Predicted Risk Score",
+       x = "Outcome")
+```
+
+:::callout-note
+
+Zoom in on the right to see the five outcomes with highest prediction scores. 
+
+:::
 ## Risk Factors by Sex
 
 ```{r, fig.align='center', fig.height=5, fig.width=8}
@@ -111,11 +143,11 @@ patient_data_wrangled %>%
   geom_line(color = "gray") +
   geom_point(aes(color =sex)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +
-  labs(title = "Prevalence of Risk Factors by Sex",
+  labs(title = "Proportion of Patients Exposed to Risk Factors by Sex",
        subtitle = "Males in the sample have more Hepatitis and Atrial Fibrillation, while females have more Osteoperosis and Type II\nDiabetes.",
        caption = "Source: Jenna Raps",
        x = "Risk Factor",
-       y = "Prevalence") +
+       y = "Proportion") +
   theme(axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10),
         plot.title = element_text(size = 14),
@@ -126,15 +158,13 @@ patient_data_wrangled %>%
   scale_color_ordinal(name = "Sex") 
 ```
 
-::: callout
 **Additional Information on Risk Factors**
 
--   In total, there were 64 risk factors recorded in the initial data set, only factors in which the difference in prevalence between sexes was 0.1 or more are displayed
+-   In total, there were 64 risk factors recorded in the initial data set, only factors in which the difference in proportionate exposure between sexes was 0.1 or more are displayed
 -   Occurrence of all risk factors is within the *prior year*
 -   Antibiotics G & L\* refers to Antibiotics Glycopeptides and lipoglycopeptides
 -   Major Depressive Disorder\* refers to Major depressive disorder, with NO occurrence of certain psychiatric disorder
 -   Type II Diabetes\* refers to Type 2 Diabetes Mellitus (DM), with no type 1 or secondary DM
-:::
 
 ## Percent of Patients in Each Age Category by Sex
 
@@ -172,8 +202,10 @@ patient_data_wrangled %>%
 
 ## Summary of Results
 
+Visually, this analysis revealed some sex differences in patient risk prediction scores and in proportion exposed to risk factors. Females in the sample had greater predicted risk for Migraine, MS, Ulcerative Colitis, and Treatment Resistant Depression, while males had greater predicted risk for Pulmonary Embolism, Dementia, and Parkinson's. With respect to risk factors, a greater proportion of females had Osteoporosis and Type II Diabetes, and had taken cephalosporin antiobiotics in the last year, while a greater proportion of males had Heart Failure, Chronic Hepatitis, and Incident Atrial Fibrillation in the last year. Overall, the male sample was older than the female sample, so the observed differences may be confounded by age. Since I did not conduct any hypothesis testing, the validity of these differences is unclear.
+
 ## Functions
 
--   **tidyr**:
--   **dplyr**:
--   **ggplot**:
+-   **tidyr**: pivot_longer(), pivot_wider()
+-   **dplyr**: mutate(), filter(), starts_with(), select(), group_by(), summarise_if(), summarize(), case_when()
+-   **ggplot**: geom_line(), geom_point(), geom_col(), geom_bar(), facet_wrap()
