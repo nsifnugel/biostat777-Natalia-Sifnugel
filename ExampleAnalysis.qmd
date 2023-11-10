@@ -57,7 +57,6 @@ patient_data_wrangled %>%
   group_by(sex) %>%
   summarise_if(is.numeric, mean, na.rm = TRUE) %>%
   pivot_longer(-c(sex), names_to = "outcome", values_to = "predicted_risk") %>%
- # mutate(outcome = factor(outcome)) %>% 
   mutate(outcome = factor(outcome),
          outcome = str_remove_all(outcome,"predicted risk of "), 
          outcome = fct_recode(outcome,
